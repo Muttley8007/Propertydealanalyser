@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>Property Deal Analyser</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">LOCAL-FIRST INVESTMENT TOOL</p>
+      <h1>Property Deal Analyser</h1>
+    </div>
+    <button id="newPropertyBtn" class="primary">+ Add property</button>
+  </header>
+
+  <nav class="tabs" aria-label="Main navigation">
+    <button class="tab active" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="analyse">Analyse</button>
+    <button class="tab" data-view="compare">Compare</button>
+    <button class="tab" data-view="settings">Settings</button>
+  </nav>
+
+  <main>
+    <section id="dashboard" class="view active">
+      <div class="hero-card">
+        <div>
+          <p class="eyebrow">SHORTLIST</p>
+          <h2>Find the deal that earns its place</h2>
+          <p class="muted">Compare cash needed, yield, holding cost and value-add potential. Historical spreadsheet scenarios are included as samples.</p>
+        </div>
+        <div class="hero-actions">
+          <button id="exportBtn">Export JSON</button>
+          <label class="buttonlike">Import JSON<input id="importInput" type="file" accept="application/json" hidden></label>
+        </div>
+      </div>
+      <div id="portfolioKpis" class="kpi-grid"></div>
+      <div class="section-head"><h2>Saved properties</h2><span id="propertyCount" class="pill"></span></div>
+      <div id="propertyCards" class="property-grid"></div>
+    </section>
+
+    <section id="analyse" class="view">
+      <div class="section-head">
+        <div><p class="eyebrow">DEAL MODEL</p><h2 id="formTitle">Property analysis</h2></div>
+        <button id="duplicateBtn">Duplicate</button>
+      </div>
+      <form id="propertyForm">
+        <input id="propertyId" type="hidden" />
+        <div class="form-grid">
+          <fieldset>
+            <legend>Property</legend>
+            <label>Name<input id="name" required placeholder="e.g. 1 Clarke Street, Forbes"></label>
+            <label>Listing / source URL<input id="url" type="url" placeholder="https://..."></label>
+            <div class="two-col">
+              <label>Purchase price ($)<input id="purchasePrice" type="number" min="0" step="1000"></label>
+              <label>Weekly rent ($)<input id="weeklyRent" type="number" min="0" step="5"></label>
+            </div>
+            <div class="two-col">
+              <label>Land size (m²)<input id="landSize" type="number" min="0"></label>
+              <label>Ownership share (%)<input id="ownershipShare" type="number" min="1" max="100" step="1"></label>
+            </div>
+            <label>Notes<textarea id="notes" rows="4" placeholder="What makes the deal interesting? Risks? Questions?"></textarea></label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Purchase & finance</legend>
+            <div class="two-col">
+              <label>Deposit (%)<input id="depositPct" type="number" min="0" max="100" step="0.1"></label>
+              <label>Interest rate (%)<input id="interestRate" type="number" min="0" step="0.01"></label>
+            </div>
+            <div class="two-col">
+              <label>Loan type<select id="loanType"><option value="IO">Interest only</option><option value="PI">Principal & interest</option></select></label>
+              <label>Loan term (years)<input id="loanTerm" type="number" min="1" max="50"></label>
+            </div>
+            <div class="two-col">
+              <label>LMI ($)<input id="lmi" type="number" min="0"></label>
+              <label>Stamp duty ($)<input id="stampDuty" type="number" min="0"></label>
+            </div>
+            <div class="two-col">
+              <label>Mortgage registration ($)<input id="mortgageRegistration" type="number" min="0"></label>
+              <label>Transfer fee ($)<input id="transferFee" type="number" min="0"></label>
+            </div>
+            <div class="two-col">
+              <label>Conveyancing ($)<input id="conveyancing" type="number" min="0"></label>
+              <label>Building & pest ($)<input id="buildingPest" type="number" min="0"></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Annual / monthly holding costs</legend>
+            <div class="two-col">
+              <label>Council rates / year ($)<input id="councilRatesAnnual" type="number" min="0"></label>
+              <label>Water / year ($)<input id="waterAnnual" type="number" min="0"></label>
+            </div>
+            <div class="two-col">
+              <label>Landlord insurance / month ($)<input id="insuranceMonthly" type="number" min="0"></label>
+              <label>Body corporate / month ($)<input id="bodyCorpMonthly" type="number" min="0"></label>
+            </div>
+            <div class="two-col">
+              <label>Management fee (%)<input id="managementPct" type="number" min="0" max="30" step="0.1"></label>
+              <label>Vacancy allowance (%)<input id="vacancyPct" type="number" min="0" max="30" step="0.1"></label>
+            </div>
+            <div class="two-col">
+              <label>Maintenance allowance / year ($)<input id="maintenanceAnnual" type="number" min="0"></label>
+              <label>Other costs / month ($)<input id="otherMonthly" type="number" min="0"></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Opportunity & risk</legend>
+            <label>Value-add potential<select id="valueAdd"><option value="0">None</option><option value="1">Low</option><option value="2">Medium</option><option value="3">High</option><option value="4">Very high</option></select></label>
+            <label>Flood risk<select id="floodRisk"><option value="0">None known</option><option value="1">Low / investigate</option><option value="2">Moderate</option><option value="3">High</option></select></label>
+            <label>Development potential<select id="development"><option value="0">None known</option><option value="1">Possible</option><option value="2">Likely / advertised</option><option value="3">Confirmed</option></select></label>
+            <label><input id="historicalSample" type="checkbox"> Historical spreadsheet sample</label>
+            <p class="hint">The score is deliberately a screening score, not a valuation or investment recommendation.</p>
+          </fieldset>
+        </div>
+
+        <div class="results-panel">
+          <div class="section-head"><h2>Live results</h2><span id="scoreBadge" class="score-badge">—</span></div>
+          <div id="liveResults" class="kpi-grid"></div>
+          <div id="breakdown" class="breakdown"></div>
+        </div>
+        <div class="sticky-actions">
+          <button type="button" id="deleteBtn" class="danger">Delete</button>
+          <button type="submit" class="primary">Save property</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="compare" class="view">
+      <div class="section-head"><div><p class="eyebrow">SIDE BY SIDE</p><h2>Compare deals</h2></div></div>
+      <div class="compare-picker" id="comparePicker"></div>
+      <div class="table-wrap"><table id="compareTable"></table></div>
+    </section>
+
+    <section id="settings" class="view">
+      <div class="section-head"><div><p class="eyebrow">APP</p><h2>Settings & data</h2></div></div>
+      <div class="settings-grid">
+        <div class="panel"><h3>Storage</h3><p>This version stores everything in your browser using localStorage. Export JSON before clearing browser data or changing devices.</p><button id="resetSamplesBtn">Restore spreadsheet samples</button></div>
+        <div class="panel"><h3>About the samples</h3><p>The four included scenarios were transcribed from the supplied workbook. Old stamp duty, LMI, fees and interest assumptions are preserved as historical sample inputs, not current market values.</p><p>The older $180k/$210k sheets used some simplified monthly-rent and cost assumptions, so the app keeps their inputs but recalculates results consistently with the modern model.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <template id="metricTemplate"><div class="kpi"><span class="kpi-label"></span><strong class="kpi-value"></strong><small class="kpi-sub"></small></div></template>
+  <script src="app.js"></script>
+</body>
+</html>

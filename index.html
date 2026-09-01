@@ -113,19 +113,20 @@
           </fieldset>
 
           <fieldset>
-            <legend>NSW planning API</legend>
-            <p class="hint">For NSW properties, use the address above to run a government spatial-data screening check. Results are saved with the property.</p>
-            <button type="button" id="planningLookupBtn" class="primary">Check NSW planning overlays</button>
+            <legend>Australian planning & hazard screening</legend>
+            <p class="hint">Uses the selected State/Territory and property address to query available government spatial services. Coverage differs by jurisdiction; the app never treats missing data as “not found”.</p>
+            <button type="button" id="planningLookupBtn" class="primary">Check planning data</button>
             <div id="planningStatus" class="planning-status">Not checked.</div>
             <div class="planning-grid">
               <div class="planning-item"><span>Zoning</span><strong id="planningZoning">—</strong></div>
               <div class="planning-item"><span>Minimum lot size</span><strong id="planningLotSize">—</strong></div>
-              <div class="planning-item"><span>Flood overlay</span><strong id="planningFlood">—</strong></div>
-              <div class="planning-item"><span>Heritage overlay</span><strong id="planningHeritage">—</strong></div>
-              <div class="planning-item"><span>Bushfire prone</span><strong id="planningBushfire">—</strong></div>
+              <div class="planning-item"><span>Flood / inundation</span><strong id="planningFlood">—</strong></div>
+              <div class="planning-item"><span>Heritage</span><strong id="planningHeritage">—</strong></div>
+              <div class="planning-item"><span>Bushfire</span><strong id="planningBushfire">—</strong></div>
             </div>
-            <input id="zoning" type="hidden"><input id="minimumLotSize" type="hidden"><input id="floodOverlay" type="hidden"><input id="heritageOverlay" type="hidden"><input id="bushfireOverlay" type="hidden"><input id="planningCheckedAt" type="hidden"><input id="planningApiStatus" type="hidden">
-            <p class="hint">Flood is a screening result only. NSW Planning notes council flood mapping may be newer than the statewide EPI dataset, so verify a serious purchase with council / a Section 10.7 certificate.</p>
+            <div id="planningSourceLinks" class="planning-source-links"></div>
+            <input id="zoning" type="hidden"><input id="minimumLotSize" type="hidden"><input id="floodOverlay" type="hidden"><input id="heritageOverlay" type="hidden"><input id="bushfireOverlay" type="hidden"><input id="planningCheckedAt" type="hidden"><input id="planningApiStatus" type="hidden"><input id="planningSourceUrl" type="hidden"><input id="planningCoverage" type="hidden">
+            <p class="hint">These are investment-screening checks, not planning certificates. Always verify a serious purchase with the relevant council/state authority, especially local flood mapping and development potential.</p>
           </fieldset>
 
           <fieldset>

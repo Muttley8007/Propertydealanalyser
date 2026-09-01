@@ -10,7 +10,7 @@ const sampleProperties=[
  {id:'sample-275',state:'QLD',propertyType:'unit',name:'Moorooka QLD – Historical $275K Scenario',purchasePrice:275000,weeklyRent:290,landSize:0,ownershipShare:50,depositPct:5,interestRate:5,loanType:'IO',loanTerm:30,lmi:7341,stampDuty:8050,mortgageRegistration:162.9,transferFee:470.9,conveyancing:1000,buildingPest:1000,councilRatesAnnual:1220.04,waterAnnual:800.04,insuranceMonthly:50,bodyCorpMonthly:116.67,managementPct:8,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Directly based on the workbook $275K Moorooka QLD sheet. It used a 5% deposit, $7,341 LMI, $290/week rent, 8% property management formula (despite the label saying 10%), council $305/qtr, water $200/qtr and body corporate $116.67/month. The workbook stored the IO repayment as $1,140.59/month.'},
  {id:'sample-280',state:'QLD',propertyType:'unit',name:'Moorooka QLD – Historical $280K Scenario',purchasePrice:280000,weeklyRent:290,landSize:0,ownershipShare:50,depositPct:5,interestRate:5,loanType:'IO',loanTerm:30,lmi:7341,stampDuty:11015,mortgageRegistration:107,transferFee:214,conveyancing:1000,buildingPest:1000,councilRatesAnnual:1220.04,waterAnnual:800.04,insuranceMonthly:50,bodyCorpMonthly:116.67,managementPct:8,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Directly based on the workbook $280K Moorooka QLD sheet. It used a 5% deposit, $7,341 LMI, $290/week rent, 8% property management formula, council $305/qtr, water $200/qtr and body corporate $116.67/month. The workbook stored the IO repayment as $1,441.85/month.'}
 ];
-const defaults={id:'',name:'',state:'NSW',propertyType:'house',address:'',url:'',purchasePrice:285000,weeklyRent:400,landSize:0,ownershipShare:100,depositPct:20,interestRate:6.2,loanType:'PI',loanTerm:30,lmi:0,stampDuty:0,mortgageRegistration:0,transferFee:0,conveyancing:1800,buildingPest:650,councilRatesAnnual:0,waterAnnual:0,insuranceMonthly:0,bodyCorpMonthly:0,managementPct:7.7,vacancyPct:2,maintenanceAnnual:1500,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:false,zoning:'',minimumLotSize:'',floodOverlay:'unknown',heritageOverlay:'unknown',bushfireOverlay:'unknown',planningCheckedAt:'',planningApiStatus:'',notes:''};
+const defaults={id:'',name:'',state:'NSW',propertyType:'house',address:'',url:'',purchasePrice:285000,weeklyRent:400,landSize:0,ownershipShare:100,depositPct:20,interestRate:6.2,loanType:'PI',loanTerm:30,lmi:0,stampDuty:0,mortgageRegistration:0,transferFee:0,conveyancing:1800,buildingPest:650,councilRatesAnnual:0,waterAnnual:0,insuranceMonthly:0,bodyCorpMonthly:0,managementPct:7.7,vacancyPct:2,maintenanceAnnual:1500,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:false,zoning:'',minimumLotSize:'',floodOverlay:'unknown',heritageOverlay:'unknown',bushfireOverlay:'unknown',planningCheckedAt:'',planningApiStatus:'',planningSourceUrl:'',planningCoverage:'',notes:''};
 let properties=load(); let selectedCompare=new Set(properties.slice(0,3).map(p=>p.id));
 
 function load(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(x)&&x.length?x:structuredClone(sampleProperties)}catch{return structuredClone(sampleProperties)}}
@@ -137,69 +137,85 @@ function renderCompareTable(){const ps=properties.filter(p=>selectedCompare.has(
 
 
 
-// NSW government spatial screening services. These are open ArcGIS REST endpoints.
+// National planning-screening adapter layer. Each jurisdiction normalises to the same result shape.
+const PLANNING_SOURCES={
+ NSW:{name:'NSW Planning Portal / Spatial Services',url:'https://www.planningportal.nsw.gov.au/spatialviewer'},
+ VIC:{name:'VicPlan',url:'https://mapshare.vic.gov.au/vicplan/'},
+ QLD:{name:'Queensland planning & mapping',url:'https://www.planning.qld.gov.au/planning-framework/mapping'},
+ SA:{name:'PlanSA / SAPPA',url:'https://sappa.plan.sa.gov.au/'},
+ WA:{name:'PlanWA',url:'https://www.wa.gov.au/service/natural-resources/land-use-management/view-planning-data-planwa'},
+ TAS:{name:'LISTmap / Tasmanian Planning Scheme',url:'https://maps.thelist.tas.gov.au/listmap/app/list/map'},
+ ACT:{name:'ACTmapi',url:'https://www.actmapi.act.gov.au/'},
+ NT:{name:'NT Planning Scheme',url:'https://nt.gov.au/property/land-planning-and-development/our-planning-system/nt-planning-scheme'}
+};
 const NSW_API={
  address:'https://portal.spatial.nsw.gov.au/server/rest/services/NSW_Geocoded_Addressing_Theme_multiCRS/FeatureServer/1/query',
  planning:'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/EPI_Primary_Planning_Layers/MapServer',
  flood:'https://mapprod3.environment.nsw.gov.au/arcgis/rest/services/Planning/Hazard/MapServer/1/query',
  bushfire:'https://portal.spatial.nsw.gov.au/server/rest/services/Hosted/NSW_BushFire_Prone_Land/FeatureServer/0/query'
 };
+const VIC_API='https://plan-geo.mapshare.vic.gov.au/arcgis/rest/services/Planning/PlanningReport/MapServer';
+const TAS_API='https://services.thelist.tas.gov.au/arcgis/rest/services/Public/PlanningOnline/MapServer';
 function setPlanningStatus(text,kind=''){const el=document.getElementById('planningStatus');if(!el)return;el.textContent=text;el.className='planning-status '+kind}
+function planningSourceLinks(state){
+ const wrap=document.getElementById('planningSourceLinks');if(!wrap)return;wrap.innerHTML='';
+ const src=PLANNING_SOURCES[state];if(src){const a=document.createElement('a');a.href=src.url;a.target='_blank';a.rel='noopener';a.textContent=`Open official ${src.name}`;wrap.append(a)}
+}
 function showPlanning(p){
  const val=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—'};
- val('planningZoning',p.zoning||'—');
- val('planningLotSize',p.minimumLotSize?`${p.minimumLotSize} m²`:'—');
- const overlay=(id,v)=>{const el=document.getElementById(id);if(!el)return;el.textContent=v==='yes'?'FOUND':v==='no'?'Not found':'—';el.className=v==='yes'?'overlay-yes':v==='no'?'overlay-no':''};
+ val('planningZoning',p.zoning||'—');val('planningLotSize',p.minimumLotSize?`${p.minimumLotSize} m²`:'—');
+ const overlay=(id,v)=>{const el=document.getElementById(id);if(!el)return;el.textContent=v==='yes'?'FOUND':v==='no'?'Not found':'Unknown';el.className=v==='yes'?'overlay-yes':v==='no'?'overlay-no':''};
  overlay('planningFlood',p.floodOverlay);overlay('planningHeritage',p.heritageOverlay);overlay('planningBushfire',p.bushfireOverlay);
- if(p.planningCheckedAt)setPlanningStatus(`Checked ${new Date(p.planningCheckedAt).toLocaleString('en-AU')}${p.planningApiStatus?` · ${p.planningApiStatus}`:''}`,'ok');else setPlanningStatus('Not checked.');
+ planningSourceLinks(p.state||'NSW');
+ if(p.planningCheckedAt)setPlanningStatus(`Checked ${new Date(p.planningCheckedAt).toLocaleString('en-AU')} · ${p.planningApiStatus||'screening data'}`,'ok');else setPlanningStatus('Not checked.');
 }
 function arcUrl(base,params){const u=new URL(base);Object.entries(params).forEach(([k,v])=>u.searchParams.set(k,v));return u.toString()}
 async function arcQuery(base,params){const r=await fetch(arcUrl(base,{f:'json',...params}));if(!r.ok)throw new Error(`API ${r.status}`);const j=await r.json();if(j.error)throw new Error(j.error.message||'ArcGIS error');return j}
 function cleanAddressForWhere(address){return String(address||'').toUpperCase().replace(/\bNSW\b/g,'').replace(/\b\d{4}\b/g,'').replace(/[^A-Z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()}
 async function resolveNswAddress(address){
- const q=cleanAddressForWhere(address);if(!q)throw new Error('Enter a NSW street address first.');
- // Use the strongest usable street phrase while allowing the service to return minor formatting variants.
- const parts=q.split(' '), house=parts.shift(), phrase=parts.join(' ');
- const where=`housenumber='${house.replace(/'/g,"''")}' AND upper(address) LIKE '%${phrase.replace(/'/g,"''")}%'`;
- let j=await arcQuery(NSW_API.address,{where,outFields:'address,housenumber,OBJECTID',returnGeometry:'true',outSR:'4283',resultRecordCount:'10'});
- if(!j.features?.length){
-   const relaxed=`upper(address) LIKE '%${phrase.replace(/'/g,"''")}%'`;
-   j=await arcQuery(NSW_API.address,{where:relaxed,outFields:'address,housenumber,OBJECTID',returnGeometry:'true',outSR:'4283',resultRecordCount:'20'});
- }
- if(!j.features?.length)throw new Error('Address was not found in the NSW address service. Try the full street address including suburb.');
- const exact=j.features.find(f=>String(f.attributes?.housenumber||'').trim()===house)||j.features[0];
- return {x:exact.geometry.x,y:exact.geometry.y,label:exact.attributes.address||address};
+ const q=cleanAddressForWhere(address);if(!q)throw new Error('Enter a NSW street address first.');const parts=q.split(' '),house=parts.shift(),phrase=parts.join(' ');
+ const esc=x=>x.replace(/'/g,"''");let j=await arcQuery(NSW_API.address,{where:`housenumber='${esc(house)}' AND upper(address) LIKE '%${esc(phrase)}%'`,outFields:'address,housenumber,OBJECTID',returnGeometry:'true',outSR:'4283',resultRecordCount:'10'});
+ if(!j.features?.length)j=await arcQuery(NSW_API.address,{where:`upper(address) LIKE '%${esc(phrase)}%'`,outFields:'address,housenumber,OBJECTID',returnGeometry:'true',outSR:'4283',resultRecordCount:'20'});
+ if(!j.features?.length)throw new Error('Address was not found in the NSW address service. Try the full street address including suburb.');const exact=j.features.find(f=>String(f.attributes?.housenumber||'').trim()===house)||j.features[0];return {x:exact.geometry.x,y:exact.geometry.y,label:exact.attributes.address||address};
 }
-async function pointLayer(layer,pt){return arcQuery(`${NSW_API.planning}/${layer}/query`,{where:'1=1',geometry:`${pt.x},${pt.y}`,geometryType:'esriGeometryPoint',inSR:'4283',spatialRel:'esriSpatialRelIntersects',outFields:'*',returnGeometry:'false',resultRecordCount:'10'})}
+async function resolveNationalAddress(address,state){
+ if(state==='NSW')return resolveNswAddress(address);
+ const q=`${address}, ${state}, Australia`;const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=au&q=${encodeURIComponent(q)}`,{headers:{'Accept':'application/json'}});if(!r.ok)throw new Error(`Address lookup ${r.status}`);const j=await r.json();if(!j.length)throw new Error('Address could not be geocoded. Include suburb, state and postcode.');return {x:Number(j[0].lon),y:Number(j[0].lat),label:j[0].display_name};
+}
+function pointParams(pt,inSR='4326'){return {where:'1=1',geometry:`${pt.x},${pt.y}`,geometryType:'esriGeometryPoint',inSR,spatialRel:'esriSpatialRelIntersects',outFields:'*',returnGeometry:'false',resultRecordCount:'20'}}
 function pickAttr(attrs,names){for(const n of names){if(attrs&&attrs[n]!=null&&attrs[n]!=='')return attrs[n]}return ''}
-async function checkNswPlanning(){
- if(document.getElementById('state').value!=='NSW'){alert('The automated planning overlay check currently supports NSW properties only.');return}
- const btn=document.getElementById('planningLookupBtn');btn.disabled=true;setPlanningStatus('Resolving address and checking NSW government layers…','warn');
- try{
-  const pt=await resolveNswAddress(document.getElementById('address').value);
-  const [zone,lot,heritage,flood,bush]=await Promise.all([
-   pointLayer(2,pt),pointLayer(4,pt),pointLayer(0,pt),
-   arcQuery(NSW_API.flood,{where:'1=1',geometry:`${pt.x},${pt.y}`,geometryType:'esriGeometryPoint',inSR:'4283',spatialRel:'esriSpatialRelIntersects',outFields:'*',returnGeometry:'false',resultRecordCount:'10'}),
-   arcQuery(NSW_API.bushfire,{where:'1=1',geometry:`${pt.x},${pt.y}`,geometryType:'esriGeometryPoint',inSR:'4283',spatialRel:'esriSpatialRelIntersects',outFields:'d_category,category',returnGeometry:'false',resultRecordCount:'10'})
-  ]);
-  const za=zone.features?.[0]?.attributes||{},la=lot.features?.[0]?.attributes||{};
-  const zoning=pickAttr(za,['SYM_CODE','ZONE','Zone','LAY_CLASS','LZN']);
-  const lotRaw=pickAttr(la,['LOT_SIZE','LOTSIZE','MIN_LOT_SIZE','MIN_LOT','AREA','LOT_SIZE_M2','LSZ']);
-  const lotNum=Number(String(lotRaw).replace(/[^0-9.]/g,''))||'';
-  document.getElementById('zoning').value=zoning||'';document.getElementById('minimumLotSize').value=lotNum||'';
-  document.getElementById('floodOverlay').value=flood.features?.length?'yes':'no';
-  document.getElementById('heritageOverlay').value=heritage.features?.length?'yes':'no';
-  document.getElementById('bushfireOverlay').value=bush.features?.length?'yes':'no';
-  document.getElementById('planningCheckedAt').value=new Date().toISOString();document.getElementById('planningApiStatus').value=`NSW open data · ${pt.label}`;
-  // Feed the flood screen into the existing risk score, but don't overwrite a stronger manual assessment.
-  if(flood.features?.length && n(document.getElementById('floodRisk').value)<1)document.getElementById('floodRisk').value=1;
-  showPlanning(readForm());renderLive();setPlanningStatus(`Government screening completed · ${pt.label}`,'ok');
- }catch(err){setPlanningStatus(`Could not complete automatic check: ${err.message}. You can still enter the overlay results manually.`, 'bad');}
- finally{btn.disabled=false}
+function featuresText(j){return JSON.stringify((j?.features||[]).map(f=>f.attributes||{})).toLowerCase()}
+function normaliseOverlay(found){return found?'yes':'no'}
+async function nswAdapter(address){
+ const pt=await resolveNswAddress(address), pp=pointParams(pt,'4283');
+ const [zone,lot,heritage,flood,bush]=await Promise.all([
+  arcQuery(`${NSW_API.planning}/2/query`,pp),arcQuery(`${NSW_API.planning}/4/query`,pp),arcQuery(`${NSW_API.planning}/0/query`,pp),arcQuery(NSW_API.flood,pp),arcQuery(NSW_API.bushfire,{...pp,outFields:'d_category,category'})]);
+ const za=zone.features?.[0]?.attributes||{},la=lot.features?.[0]?.attributes||{},lotRaw=pickAttr(la,['LOT_SIZE','LOTSIZE','MIN_LOT_SIZE','MIN_LOT','AREA','LOT_SIZE_M2','LSZ']);
+ return {label:pt.label,zoning:pickAttr(za,['SYM_CODE','ZONE','Zone','LAY_CLASS','LZN']),minimumLotSize:Number(String(lotRaw).replace(/[^0-9.]/g,''))||'',floodOverlay:normaliseOverlay(flood.features?.length),heritageOverlay:normaliseOverlay(heritage.features?.length),bushfireOverlay:normaliseOverlay(bush.features?.length),coverage:'full',status:'NSW government spatial screening'};
 }
-
+async function vicAdapter(address){
+ const pt=await resolveNationalAddress(address,'VIC'),q=layer=>arcQuery(`${VIC_API}/${layer}/query`,pointParams(pt));
+ const [zone,bpa,bmo,fo,lsio,sbo,heritage]=await Promise.all([q(21),q(15),q(25),q(33),q(37),q(45),q(34)]);
+ const za=zone.features?.[0]?.attributes||{};return {label:pt.label,zoning:pickAttr(za,['ZONE_CODE','ZONE','ZONE_DESC','ZONE_DESCRIPTION','ZONE_NAME','ZONING']),minimumLotSize:'',floodOverlay:normaliseOverlay((fo.features?.length||0)+(lsio.features?.length||0)+(sbo.features?.length||0)>0),heritageOverlay:normaliseOverlay(heritage.features?.length),bushfireOverlay:normaliseOverlay((bpa.features?.length||0)+(bmo.features?.length||0)>0),coverage:'full',status:'VicPlan government screening (FO/LSIO/SBO + BPA/BMO)'};
+}
+async function tasAdapter(address){
+ const pt=await resolveNationalAddress(address,'TAS');const [zone,codes]=await Promise.all([arcQuery(`${TAS_API}/13/query`,pointParams(pt)),arcQuery(`${TAS_API}/14/query`,pointParams(pt))]);const za=zone.features?.[0]?.attributes||{},txt=featuresText(codes);
+ return {label:pt.label,zoning:pickAttr(za,['ZONE','ZONE_NAME','ZONE_DESC','ZONE_NO','ZONENAME','ZONING']),minimumLotSize:'',floodOverlay:txt.includes('flood')?'yes':'no',heritageOverlay:txt.includes('heritage')||txt.includes('historic')?'yes':'no',bushfireOverlay:txt.includes('bushfire')?'yes':'no',coverage:'full',status:'Tasmanian Planning Scheme / LIST screening'};
+}
+async function manualAdapter(address,state){
+ const pt=await resolveNationalAddress(address,state).catch(()=>({label:address}));return {label:pt.label,zoning:'',minimumLotSize:'',floodOverlay:'unknown',heritageOverlay:'unknown',bushfireOverlay:'unknown',coverage:'official-manual',status:`${state}: official map linked; automatic normalised overlay API not yet reliable`};
+}
+const STATE_ADAPTERS={NSW:nswAdapter,VIC:vicAdapter,TAS:tasAdapter,QLD:a=>manualAdapter(a,'QLD'),SA:a=>manualAdapter(a,'SA'),WA:a=>manualAdapter(a,'WA'),ACT:a=>manualAdapter(a,'ACT'),NT:a=>manualAdapter(a,'NT')};
+async function checkPlanning(){
+ const state=document.getElementById('state').value,address=document.getElementById('address').value.trim();if(!address){alert('Enter the property street address first.');return}const btn=document.getElementById('planningLookupBtn');btn.disabled=true;setPlanningStatus(`Checking ${state} planning data…`,'warn');planningSourceLinks(state);
+ try{const result=await STATE_ADAPTERS[state](address);document.getElementById('zoning').value=result.zoning||'';document.getElementById('minimumLotSize').value=result.minimumLotSize||'';document.getElementById('floodOverlay').value=result.floodOverlay||'unknown';document.getElementById('heritageOverlay').value=result.heritageOverlay||'unknown';document.getElementById('bushfireOverlay').value=result.bushfireOverlay||'unknown';document.getElementById('planningCheckedAt').value=new Date().toISOString();document.getElementById('planningApiStatus').value=result.status;document.getElementById('planningCoverage').value=result.coverage;document.getElementById('planningSourceUrl').value=PLANNING_SOURCES[state]?.url||'';
+  if(result.floodOverlay==='yes'&&n(document.getElementById('floodRisk').value)<1)document.getElementById('floodRisk').value=1;showPlanning(readForm());renderLive();
+  if(result.coverage==='official-manual')setPlanningStatus(`${state} address resolved. Automatic overlay normalisation is not yet dependable here — use the official map link and enter results manually.`,'warn');else setPlanningStatus(`Government screening completed · ${result.label}`,'ok');
+ }catch(err){setPlanningStatus(`Could not complete the ${state} check: ${err.message}. Use the official map link and enter overlay results manually.`,'bad')}finally{btn.disabled=false}
+}
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>switchView(t.dataset.view));
-document.getElementById('planningLookupBtn').onclick=checkNswPlanning;
+document.getElementById('planningLookupBtn').onclick=checkPlanning;
+document.getElementById('state').addEventListener('change',()=>planningSourceLinks(document.getElementById('state').value));
 document.getElementById('newPropertyBtn').onclick=()=>{fillForm({...defaults,id:''});switchView('analyse')};
 document.getElementById('calcDutyBtn').onclick=()=>{const state=document.getElementById('state').value,price=n(document.getElementById('purchasePrice').value),duty=calcTransferDuty(state,price);if(duty===null){alert('Automatic duty is currently implemented for standard NSW and QLD investment purchases only. Enter the official calculator result manually for this state.');return;}document.getElementById('stampDuty').value=duty.toFixed(2);renderLive();};
 document.getElementById('duplicateBtn').onclick=()=>{const p=readForm();p.id='';p.name=`${p.name||'Property'} copy`;fillForm(p)};

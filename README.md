@@ -39,3 +39,16 @@ The Moorooka workbook samples are preserved as historical scenarios, including t
 For NSW properties, enter a street address and press **Check NSW planning overlays**. The app attempts to resolve the address using NSW Spatial Services and query NSW Government ArcGIS REST layers for land zoning, minimum lot size, heritage, flood planning and bushfire-prone land. Results are stored with the property.
 
 Flood results are screening only. NSW Planning advises that councils have been responsible for current local flood mapping since 14 July 2021, so a serious purchase should still be verified with the relevant council / Section 10.7 planning certificate. If a browser or government endpoint blocks a request, the app leaves the result unverified rather than treating it as 'not found'.
+
+## v1.3 national planning adapter
+The planning screen now uses a jurisdiction adapter selected from the property's State/Territory and stores a normalised result: zoning, minimum lot size, flood/inundation, heritage and bushfire.
+
+Current automation tiers:
+- **NSW:** automated government spatial screening for zoning, minimum lot size, flood, heritage and bushfire.
+- **Victoria:** automated VicPlan screening for zoning, Floodway / LSIO / Special Building overlays, Heritage Overlay, Bushfire Prone Area and Bushfire Management Overlay.
+- **Tasmania:** automated LIST/Tasmanian Planning Scheme screening for zoning and code overlays, including flood, bushfire and heritage terms.
+- **Queensland, South Australia, Western Australia, ACT and Northern Territory:** supported in the national workflow with address resolution, the correct official planning-map link, and `Unknown` results until a dependable normalised public endpoint is available. The app deliberately does not convert missing data to “Not found”.
+
+For non-NSW address geocoding, the app uses a user-triggered OpenStreetMap Nominatim lookup only to obtain a point for spatial queries. Planning/hazard classifications come from government services where automated coverage is enabled.
+
+Every automated result remains a screening tool rather than a planning certificate. Local council flood mapping, parcel-specific planning rules and current statutory documents should be checked before committing to a purchase.

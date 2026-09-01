@@ -1,4 +1,4 @@
-# Property Deal Analyser PWA
+# Property Deal Analyser PWA v1.5
 
 A local-first property investment screening app based on the supplied `Moorooka_Unit_Purchase&Holding_Cashflow_Analysis` workbook.
 
@@ -59,3 +59,8 @@ Every automated result remains a screening tool rather than a planning certifica
 The Market Finder seeds 51 house markets from the supplied **DSR Market Matcher June 2026 All States** workbook. It filters/ranks the available DSR, typical value, vacancy and gross-yield fields. The companion **HTAG & DSR Data Metrics For Predicting Boom Suburbs** workbook is used as the rule specification for additional metrics; fields not present in the June dataset are deliberately marked as awaiting data rather than treated as zero.
 
 The default filters mirror the supplied guidance: DSR >= 50, typical value <= $450,000, vacancy <= 2.8%, gross rental yield >= 4%. Click **Analyse a property here** to seed a property analysis with the market context.
+
+
+## v1.5 plain-English guide
+
+Adds an in-app Guide tab, worked example, glossary, and expands visible property-investment acronyms into full words wherever practical.

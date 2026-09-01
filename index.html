@@ -23,6 +23,7 @@
     <button class="tab" data-view="markets">Market Finder</button>
     <button class="tab" data-view="analyse">Analyse</button>
     <button class="tab" data-view="compare">Compare</button>
+    <button class="tab" data-view="guide">Guide</button>
     <button class="tab" data-view="settings">Settings</button>
   </nav>
 
@@ -35,8 +36,8 @@
           <p class="muted">Compare cash needed, yield, holding cost and value-add potential. Historical spreadsheet scenarios are included as samples.</p>
         </div>
         <div class="hero-actions">
-          <button id="exportBtn">Export JSON</button>
-          <label class="buttonlike">Import JSON<input id="importInput" type="file" accept="application/json" hidden></label>
+          <button id="exportBtn">Export backup</button>
+          <label class="buttonlike">Import backup<input id="importInput" type="file" accept="application/json" hidden></label>
         </div>
       </div>
       <div id="portfolioKpis" class="kpi-grid"></div>
@@ -50,7 +51,7 @@
         <div>
           <p class="eyebrow">MARKET FINDER · JUNE 2026 SAMPLE DATA</p>
           <h2>Find the suburbs worth investigating</h2>
-          <p class="muted">Ranks the supplied DSR Market Matcher data against adjustable affordability, demand and cash-flow criteria. HTAG-only metrics are shown separately so missing data is never invented.</p>
+          <p class="muted">Ranks the supplied June 2026 Market Matcher data against adjustable affordability, demand and cash-flow criteria. Extra metrics from the companion suburb-prediction workbook are shown separately so missing data is never invented.</p>
         </div>
         <div class="hero-actions"><button id="resetMarketFiltersBtn">Reset filters</button></div>
       </div>
@@ -59,11 +60,11 @@
           <h3>My market filters</h3>
           <label>State<select id="marketState"><option value="ALL">All states</option><option>NSW</option><option>QLD</option><option>VIC</option><option>SA</option><option>WA</option><option>TAS</option><option>NT</option><option>ACT</option></select></label>
           <label>Maximum typical value ($)<input id="marketBudget" type="number" min="0" step="10000" value="450000"></label>
-          <label>Minimum DSR<input id="marketMinDsr" type="number" min="0" max="100" step="1" value="50"></label>
+          <label>Minimum Demand to Supply Ratio<input id="marketMinDsr" type="number" min="0" max="100" step="1" value="50"></label>
           <label>Maximum vacancy rate (%)<input id="marketMaxVacancy" type="number" min="0" max="20" step="0.1" value="2.8"></label>
           <label>Minimum gross yield (%)<input id="marketMinYield" type="number" min="0" max="30" step="0.1" value="4"></label>
           <label>Search suburb<input id="marketSearch" type="search" placeholder="e.g. Broken Hill"></label>
-          <p class="hint">Defaults reflect the supplied HTAG/DSR guidance: DSR ≥50, vacancy ≤2.8%, typical value ≤$450k and yield ≥4%.</p>
+          <p class="hint">Defaults reflect the supplied spreadsheet guidance: Demand to Supply Ratio ≥50, vacancy ≤2.8%, typical value ≤$450k and gross rental yield ≥4%.</p>
         </aside>
         <div>
           <div id="marketKpis" class="kpi-grid"></div>
@@ -73,8 +74,8 @@
       </div>
       <div class="section-head"><div><p class="eyebrow">MODEL</p><h2>How the spreadsheets fit together</h2></div></div>
       <div class="settings-grid">
-        <div class="panel"><h3>Current DSR dataset</h3><p>The June 2026 workbook supplies four usable market metrics for each suburb: DSR, typical value, vacancy rate and gross rental yield. The Market Score uses only those available fields.</p><div id="dsrRules" class="rule-list"></div></div>
-        <div class="panel"><h3>HTAG expansion metrics</h3><p>These are valuable rules from the other workbook, but the June DSR dataset does not contain their suburb values yet. They are tracked as future enrichment fields rather than scored as zero.</p><div id="htagRules" class="rule-list"></div></div>
+        <div class="panel"><h3>Current Market Matcher dataset</h3><p>The June 2026 workbook supplies four usable market metrics for each suburb: Demand to Supply Ratio, typical value, vacancy rate and gross rental yield. The Market Score uses only those available fields.</p><div id="dsrRules" class="rule-list"></div></div>
+        <div class="panel"><h3>Additional suburb-prediction metrics</h3><p>These are valuable rules from the companion workbook, but the June Market Matcher dataset does not contain their suburb values yet. They are tracked as future enrichment fields rather than scored as zero.</p><div id="htagRules" class="rule-list"></div></div>
       </div>
     </section>
 
@@ -111,12 +112,12 @@
               <label>Interest rate (%) <span class="source-tag external">CURRENT</span><input id="interestRate" type="number" min="0" step="0.01"></label>
             </div>
             <div class="two-col">
-              <label>Loan type<select id="loanType"><option value="IO">Interest only</option><option value="PI">Principal & interest</option></select></label>
+              <label>Loan repayment type<select id="loanType"><option value="IO">Interest Only</option><option value="PI">Principal and Interest</option></select></label>
               <label>Loan term (years)<input id="loanTerm" type="number" min="1" max="50"></label>
             </div>
             <div class="two-col">
-              <label>LMI ($) <span class="source-tag external">QUOTE</span><input id="lmi" type="number" min="0"></label>
-              <label>Stamp duty ($) <span class="source-tag calc">AUTO*</span><input id="stampDuty" type="number" min="0"><button type="button" class="mini-action" id="calcDutyBtn">Calculate NSW/QLD duty</button></label>
+              <label>Lenders Mortgage Insurance ($) <span class="source-tag external">QUOTE</span><input id="lmi" type="number" min="0"></label>
+              <label>Stamp duty ($) <span class="source-tag calc">AUTO*</span><input id="stampDuty" type="number" min="0"><button type="button" class="mini-action" id="calcDutyBtn">Calculate duty</button></label>
             </div>
             <div class="two-col">
               <label>Mortgage registration ($) <span class="source-tag external">CURRENT</span><input id="mortgageRegistration" type="number" min="0"></label>
@@ -178,11 +179,11 @@
 
         <div class="panel source-guide">
           <div class="section-head"><div><p class="eyebrow">WORKBOOK DATA LOGIC</p><h2>Where each number comes from</h2></div></div>
-          <div class="source-legend"><span class="source-tag calc">CALCULATED</span> app formula <span class="source-tag property">PROPERTY</span> listing/agent/council <span class="source-tag external">CURRENT / QUOTE</span> lender/provider/government <span class="source-tag user">USER</span> your financing choice</div>
+          <div class="source-legend"><span class="source-tag calc">CALCULATED</span> app formula <span class="source-tag property">PROPERTY</span> listing, agent or council <span class="source-tag external">CURRENT / QUOTE</span> lender, provider or government <span class="source-tag user">YOUR CHOICE</span> your financing choice</div>
           <div class="data-spec">
             <div><strong>Calculated by app</strong><span>Deposit $, base loan, total loan, monthly repayments, monthly rent, management $, gross yield, net cash flow, cash required and comparison metrics.</span></div>
             <div><strong>Government/current</strong><span>Stamp duty and registration/transfer fees. Duty can be auto-estimated for standard NSW or QLD investment purchases; verify unusual transactions with the relevant revenue office.</span></div>
-            <div><strong>Finance quote</strong><span>Interest rate and LMI. These depend on lender, LVR, loan structure and borrower profile, so the workbook correctly treated them as current external data.</span></div>
+            <div><strong>Finance quote</strong><span>Interest rate and Lenders Mortgage Insurance. These depend on the lender, Loan-to-Value Ratio, loan structure and borrower profile, so the workbook correctly treated them as current external data.</span></div>
             <div><strong>Property-specific</strong><span>Price, land size, council rates, water, strata/body corporate and achievable rent. Prefer contract/agent/council/property-manager figures over generic suburb estimates.</span></div>
             <div><strong>Service quotes</strong><span>Conveyancing, building/pest, landlord insurance and property-management percentage.</span></div>
           </div>
@@ -206,11 +207,86 @@
       <div class="table-wrap"><table id="compareTable"></table></div>
     </section>
 
+    <section id="guide" class="view">
+      <div class="hero-card guide-hero">
+        <div>
+          <p class="eyebrow">PLAIN-ENGLISH GUIDE</p>
+          <h2>What this app is actually doing</h2>
+          <p class="muted">You do not need to understand property-investment jargon. The app has two jobs: first find markets worth investigating, then test whether a particular property makes financial sense.</p>
+        </div>
+        <button class="primary" type="button" data-guide-jump="markets">Open Market Finder</button>
+      </div>
+
+      <div class="guide-steps">
+        <article class="guide-step"><span>1</span><div><h3>Find a promising market</h3><p>The <strong>Market Finder</strong> asks: “Which suburbs show signs of strong demand, limited rental supply and reasonable prices?” It creates a shortlist. A high score means <em>investigate this suburb</em>, not <em>buy anything in it</em>.</p></div></article>
+        <article class="guide-step"><span>2</span><div><h3>Analyse an actual property</h3><p>Enter the asking price, expected rent, deposit, loan rate and real running costs. The app then works out yield, cash required, loan repayments and expected monthly cash flow.</p></div></article>
+        <article class="guide-step"><span>3</span><div><h3>Check the land and planning risks</h3><p>The planning lookup screens for zoning, minimum lot size, flood or inundation, heritage and bushfire information. These checks can uncover both problems and value-add opportunities such as a large developable block.</p></div></article>
+        <article class="guide-step"><span>4</span><div><h3>Verify the assumptions</h3><p>Replace estimates with actual figures: a rental appraisal, council rates, insurance quote, finance quote and—before buying—professional inspections and planning advice. The closer the inputs are to reality, the more useful the result becomes.</p></div></article>
+      </div>
+
+      <div class="section-head"><div><p class="eyebrow">MARKET FINDER</p><h2>How to read the suburb numbers</h2></div></div>
+      <div class="guide-grid">
+        <article class="guide-card"><h3>Demand to Supply Ratio <span class="why">What is it?</span></h3><p>A score designed to compare buyer demand with the amount of property available. In the supplied spreadsheet, <strong>50 or more</strong> is the initial screening target.</p><div class="traffic"><b class="good-dot">Higher</b><span>More demand relative to supply</span><b class="bad-dot">Lower</b><span>Less compelling for this strategy</span></div><p class="fine">It is a screening metric from the supplied data source, not a guarantee that prices will rise.</p></article>
+        <article class="guide-card"><h3>Vacancy rate</h3><p>The percentage of rental properties currently sitting vacant. For a landlord, lower is generally better because there are fewer empty rentals competing for tenants.</p><div class="traffic"><b class="good-dot">Around 0–2%</b><span>Tight rental market</span><b class="warn-dot">2–2.8%</b><span>Still within our current screen</span><b class="bad-dot">Above 2.8%</b><span>Needs more scrutiny</span></div></article>
+        <article class="guide-card"><h3>Gross rental yield</h3><p>Annual rent divided by property price. It tells you how much rent the property produces relative to what it costs, <strong>before expenses</strong>.</p><div class="formula">Weekly rent × 52 ÷ purchase price</div><p>Example: $405 a week on a $285,000 property is about <strong>7.4% gross yield</strong>.</p></article>
+        <article class="guide-card"><h3>Typical value</h3><p>A suburb-level typical property value. We use it mainly to keep the search inside your buying range. It is <strong>not</strong> a valuation of the property you are considering.</p></article>
+        <article class="guide-card"><h3>Market Score</h3><p><strong>Our own screening score out of 100.</strong> It combines the market data available in the supplied spreadsheets. It is deliberately not presented as an industry rating or prediction.</p><div class="score-key"><span><b>75–100</b> Strong shortlist</span><span><b>55–74</b> Worth investigating</span><span><b>Below 55</b> Less attractive on current rules</span></div></article>
+        <article class="guide-card"><h3>Extra market metrics</h3><p>The companion spreadsheet also wants measures such as stock on market, days on market, price growth and building approvals. The app only uses them when real values are available; missing data is never silently treated as zero.</p></article>
+      </div>
+
+      <div class="section-head"><div><p class="eyebrow">PROPERTY ANALYSER</p><h2>How to read the deal numbers</h2></div></div>
+      <div class="guide-grid">
+        <article class="guide-card"><h3>Cash required</h3><p>The amount you need to get into the deal: deposit plus purchase costs that are not being financed. This matters because two properties with similar returns can require very different amounts of your own money.</p></article>
+        <article class="guide-card"><h3>Loan-to-Value Ratio</h3><p>The loan compared with the property's value. An 80% Loan-to-Value Ratio means the lender funds 80% and you provide 20% before purchase costs. Higher ratios can increase risk and may trigger Lenders Mortgage Insurance.</p></article>
+        <article class="guide-card"><h3>Lenders Mortgage Insurance</h3><p>An insurance premium that protects the <strong>lender</strong>, not you, if the loan is high relative to the property's value. It can sometimes be added to the loan instead of paid entirely upfront.</p></article>
+        <article class="guide-card"><h3>Interest Only versus Principal and Interest</h3><p><strong>Interest Only</strong> keeps repayments lower but does not reduce the loan balance during that period. <strong>Principal and Interest</strong> costs more each month because part of each payment reduces the debt.</p></article>
+        <article class="guide-card"><h3>Net cash flow</h3><p>What is left after rent minus loan repayments, vacancy allowance, management, rates, water, insurance, maintenance and other entered costs.</p><div class="traffic"><b class="good-dot">Positive</b><span>The property is estimated to put cash in your pocket</span><b class="bad-dot">Negative</b><span>You are estimated to contribute money to hold it</span></div></article>
+        <article class="guide-card"><h3>Cash-on-cash return</h3><p>Annual cash flow compared with the cash you put into the purchase. It helps compare a cheap, highly leveraged deal with a more expensive deal requiring much more of your capital.</p></article>
+        <article class="guide-card"><h3>Property Score</h3><p>Our screening score for the <strong>individual property</strong>. It considers the financial result plus value-add, development and risk inputs. It is not a valuation and should never replace due diligence.</p></article>
+        <article class="guide-card"><h3>Opportunity Score</h3><p>The combined view of <strong>market quality + the individual property</strong>. A great property in a weak market and a poor property in a great market should not look identical.</p></article>
+      </div>
+
+      <div class="section-head"><div><p class="eyebrow">PLANNING</p><h2>How to interpret the government checks</h2></div></div>
+      <div class="guide-grid">
+        <article class="guide-card"><h3>Zoning</h3><p>Tells you broadly what the land can be used for. It is one of the first clues when investigating a second dwelling, subdivision or another value-add idea.</p></article>
+        <article class="guide-card"><h3>Minimum lot size</h3><p>The mapped minimum size for certain subdivision outcomes where the relevant planning rules apply. A block being larger than this number does <strong>not</strong> automatically mean it can be subdivided.</p></article>
+        <article class="guide-card"><h3>Flood / inundation</h3><p><strong>Found</strong> means a relevant government spatial layer intersects the property location. That can affect insurance, development and resale. <strong>Unknown</strong> means the app could not establish the answer—it does not mean safe.</p></article>
+        <article class="guide-card"><h3>Heritage and bushfire</h3><p>These overlays can add building, development, insurance or approval constraints. They are reasons to investigate further rather than automatic rejection rules.</p></article>
+      </div>
+
+      <div class="worked-example">
+        <p class="eyebrow">WORKED EXAMPLE</p>
+        <h2>Reading 1 Clarke Street, Forbes</h2>
+        <p>Using the figures we first examined—about <strong>$285,000 purchase price</strong> and <strong>$405 a week rent</strong>—the gross rental yield is about <strong>7.4%</strong>. That is interesting because the rent is high relative to the purchase price.</p>
+        <div class="example-flow">
+          <div><b>1. Market</b><span>Is Forbes attractive enough to investigate?</span></div>
+          <div><b>2. Property</b><span>Does $405/week support a $285,000 purchase after real expenses?</span></div>
+          <div><b>3. Land</b><span>6,070 m² creates possible value-add, but only if planning rules allow useful development.</span></div>
+          <div><b>4. Risk</b><span>A flood overlay changes the question from “huge cheap block!” to “how much of this land is actually useful?”</span></div>
+          <div><b>5. Verify</b><span>Get a property-manager rental appraisal, insurance quote, council/rates information and planning advice before spending meaningful money.</span></div>
+        </div>
+        <p class="guide-callout"><strong>The app's job is not to say “buy”.</strong> Its job is to turn a listing into a structured set of questions, show you where the money comes from, and identify what you need to verify next.</p>
+      </div>
+
+      <div class="section-head"><div><p class="eyebrow">QUICK GLOSSARY</p><h2>Words you will see in property investing</h2></div></div>
+      <div class="glossary">
+        <details><summary>Demand to Supply Ratio</summary><p>A supplied market score intended to show the balance between demand and available property.</p></details>
+        <details><summary>Days on Market</summary><p>How long properties generally take to sell. Falling or low days can indicate stronger buyer demand.</p></details>
+        <details><summary>Stock on Market</summary><p>How much property is listed for sale relative to the market. Lower or falling stock can indicate tighter supply.</p></details>
+        <details><summary>Loan-to-Value Ratio</summary><p>The loan amount divided by the property's value, expressed as a percentage.</p></details>
+        <details><summary>Lenders Mortgage Insurance</summary><p>Insurance protecting the lender when lending a high proportion of the property value.</p></details>
+        <details><summary>Gross yield</summary><p>Annual rent divided by purchase price before costs.</p></details>
+        <details><summary>Net yield</summary><p>Rental return after operating costs, usually before financing and tax depending on the chosen definition.</p></details>
+        <details><summary>Vacancy allowance</summary><p>A budget for periods when the property may have no tenant and therefore no rent.</p></details>
+        <details><summary>Value-add</summary><p>Something you can do to improve rent or value rather than relying only on the overall market to rise.</p></details>
+      </div>
+    </section>
+
     <section id="settings" class="view">
       <div class="section-head"><div><p class="eyebrow">APP</p><h2>Settings & data</h2></div></div>
       <div class="settings-grid">
-        <div class="panel"><h3>Storage</h3><p>This version stores everything in your browser using localStorage. Export JSON before clearing browser data or changing devices.</p><button id="resetSamplesBtn">Restore spreadsheet samples</button></div>
-        <div class="panel"><h3>About the samples</h3><p>The four included scenarios were transcribed from the supplied workbook. Old stamp duty, LMI, fees and interest assumptions are preserved as historical sample inputs, not current market values.</p><p>The older $180k/$210k sheets used some simplified monthly-rent and cost assumptions, so the app keeps their inputs but recalculates results consistently with the modern model.</p></div>
+        <div class="panel"><h3>Storage</h3><p>This version stores everything in your browser in your browser on this device. Export backup before clearing browser data or changing devices.</p><button id="resetSamplesBtn">Restore spreadsheet samples</button></div>
+        <div class="panel"><h3>About the samples</h3><p>The four included scenarios were transcribed from the supplied workbook. Old stamp duty, Lenders Mortgage Insurance, fees and interest assumptions are preserved as historical sample inputs, not current market values.</p><p>The older $180k/$210k sheets used some simplified monthly-rent and cost assumptions, so the app keeps their inputs but recalculates results consistently with the modern model.</p></div>
       </div>
     </section>
   </main>

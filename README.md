@@ -40,7 +40,7 @@ For NSW properties, enter a street address and press **Check NSW planning overla
 
 Flood results are screening only. NSW Planning advises that councils have been responsible for current local flood mapping since 14 July 2021, so a serious purchase should still be verified with the relevant council / Section 10.7 planning certificate. If a browser or government endpoint blocks a request, the app leaves the result unverified rather than treating it as 'not found'.
 
-## v1.3 national planning adapter
+## v1.4 national planning adapter
 The planning screen now uses a jurisdiction adapter selected from the property's State/Territory and stores a normalised result: zoning, minimum lot size, flood/inundation, heritage and bushfire.
 
 Current automation tiers:
@@ -52,3 +52,10 @@ Current automation tiers:
 For non-NSW address geocoding, the app uses a user-triggered OpenStreetMap Nominatim lookup only to obtain a point for spatial queries. Planning/hazard classifications come from government services where automated coverage is enabled.
 
 Every automated result remains a screening tool rather than a planning certificate. Local council flood mapping, parcel-specific planning rules and current statutory documents should be checked before committing to a purchase.
+
+
+## v1.4 Market Finder
+
+The Market Finder seeds 51 house markets from the supplied **DSR Market Matcher June 2026 All States** workbook. It filters/ranks the available DSR, typical value, vacancy and gross-yield fields. The companion **HTAG & DSR Data Metrics For Predicting Boom Suburbs** workbook is used as the rule specification for additional metrics; fields not present in the June dataset are deliberately marked as awaiting data rather than treated as zero.
+
+The default filters mirror the supplied guidance: DSR >= 50, typical value <= $450,000, vacancy <= 2.8%, gross rental yield >= 4%. Click **Analyse a property here** to seed a property analysis with the market context.

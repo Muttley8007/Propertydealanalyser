@@ -20,6 +20,7 @@
 
   <nav class="tabs" aria-label="Main navigation">
     <button class="tab active" data-view="dashboard">Dashboard</button>
+    <button class="tab" data-view="markets">Market Finder</button>
     <button class="tab" data-view="analyse">Analyse</button>
     <button class="tab" data-view="compare">Compare</button>
     <button class="tab" data-view="settings">Settings</button>
@@ -43,6 +44,40 @@
       <div id="propertyCards" class="property-grid"></div>
     </section>
 
+
+    <section id="markets" class="view">
+      <div class="hero-card">
+        <div>
+          <p class="eyebrow">MARKET FINDER · JUNE 2026 SAMPLE DATA</p>
+          <h2>Find the suburbs worth investigating</h2>
+          <p class="muted">Ranks the supplied DSR Market Matcher data against adjustable affordability, demand and cash-flow criteria. HTAG-only metrics are shown separately so missing data is never invented.</p>
+        </div>
+        <div class="hero-actions"><button id="resetMarketFiltersBtn">Reset filters</button></div>
+      </div>
+      <div class="market-layout">
+        <aside class="panel market-filters">
+          <h3>My market filters</h3>
+          <label>State<select id="marketState"><option value="ALL">All states</option><option>NSW</option><option>QLD</option><option>VIC</option><option>SA</option><option>WA</option><option>TAS</option><option>NT</option><option>ACT</option></select></label>
+          <label>Maximum typical value ($)<input id="marketBudget" type="number" min="0" step="10000" value="450000"></label>
+          <label>Minimum DSR<input id="marketMinDsr" type="number" min="0" max="100" step="1" value="50"></label>
+          <label>Maximum vacancy rate (%)<input id="marketMaxVacancy" type="number" min="0" max="20" step="0.1" value="2.8"></label>
+          <label>Minimum gross yield (%)<input id="marketMinYield" type="number" min="0" max="30" step="0.1" value="4"></label>
+          <label>Search suburb<input id="marketSearch" type="search" placeholder="e.g. Broken Hill"></label>
+          <p class="hint">Defaults reflect the supplied HTAG/DSR guidance: DSR ≥50, vacancy ≤2.8%, typical value ≤$450k and yield ≥4%.</p>
+        </aside>
+        <div>
+          <div id="marketKpis" class="kpi-grid"></div>
+          <div class="section-head"><div><p class="eyebrow">SHORTLIST</p><h2>Matching markets</h2></div><span id="marketCount" class="pill"></span></div>
+          <div id="marketCards" class="market-cards"></div>
+        </div>
+      </div>
+      <div class="section-head"><div><p class="eyebrow">MODEL</p><h2>How the spreadsheets fit together</h2></div></div>
+      <div class="settings-grid">
+        <div class="panel"><h3>Current DSR dataset</h3><p>The June 2026 workbook supplies four usable market metrics for each suburb: DSR, typical value, vacancy rate and gross rental yield. The Market Score uses only those available fields.</p><div id="dsrRules" class="rule-list"></div></div>
+        <div class="panel"><h3>HTAG expansion metrics</h3><p>These are valuable rules from the other workbook, but the June DSR dataset does not contain their suburb values yet. They are tracked as future enrichment fields rather than scored as zero.</p><div id="htagRules" class="rule-list"></div></div>
+      </div>
+    </section>
+
     <section id="analyse" class="view">
       <div class="section-head">
         <div><p class="eyebrow">DEAL MODEL</p><h2 id="formTitle">Property analysis</h2></div>
@@ -57,6 +92,7 @@
             <div class="two-col"><label>State <span class="source-tag user">USER</span><select id="state"><option value="NSW">NSW</option><option value="QLD">QLD</option><option value="VIC">VIC</option><option value="ACT">ACT</option><option value="SA">SA</option><option value="WA">WA</option><option value="TAS">TAS</option><option value="NT">NT</option></select></label><label>Property type <span class="source-tag user">USER</span><select id="propertyType"><option value="house">House</option><option value="unit">Unit / apartment</option><option value="townhouse">Townhouse</option><option value="land">Land</option><option value="other">Other</option></select></label></div>
             <label>Street address <span class="source-tag property">PROPERTY</span><input id="address" placeholder="e.g. 1 Clarke Street, Forbes NSW 2871"></label>
             <label>Listing / source URL <span class="source-tag property">PROPERTY</span><input id="url" type="url" placeholder="https://..."></label>
+            <div class="two-col"><label>Market / suburb<input id="marketSuburb" placeholder="e.g. Forbes"></label><label>Market score<input id="marketScore" type="number" min="0" max="100" readonly></label></div>
             <div class="two-col">
               <label>Purchase price ($) <span class="source-tag property">PROPERTY</span><input id="purchasePrice" type="number" min="0" step="1000"></label>
               <label>Weekly rent ($) <span class="source-tag external">CURRENT</span><input id="weeklyRent" type="number" min="0" step="5"></label>

@@ -27,3 +27,9 @@ python -m http.server 8080
 Then open `http://localhost:8080`.
 
 For GitHub Pages, place these files at the repo root (or `/docs`) and enable Pages.
+
+
+## Data-source model (v1.1)
+The supplied workbook did not intend every number to be hard-coded. This revision labels inputs by source: USER, PROPERTY, CURRENT/QUOTE, or calculated by the app. It also includes an optional transfer-duty estimator for standard NSW and QLD investment purchases. Always verify duty and unusual transaction treatment with the relevant state revenue office or conveyancer.
+
+The Moorooka workbook samples are preserved as historical scenarios, including their original stamp duty, fees, LMI and interest assumptions.

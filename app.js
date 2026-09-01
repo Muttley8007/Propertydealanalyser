@@ -5,17 +5,38 @@ const fmtPct=n=>`${(Number(n)||0).toFixed(2)}%`;
 const uid=()=>crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
 
 const sampleProperties=[
- {id:'sample-180',name:'Historical $180K Purchase Analysis',purchasePrice:180000,weeklyRent:300,landSize:0,ownershipShare:50,depositPct:5,interestRate:7.5,loanType:'IO',loanTerm:30,lmi:0,stampDuty:6830,mortgageRegistration:140,transferFee:1134,conveyancing:500,buildingPest:500,councilRatesAnnual:1400,waterAnnual:0,insuranceMonthly:70,bodyCorpMonthly:0,managementPct:10,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Transcribed from the workbook $180K sheet. Workbook showed $150/week rent per owner / $1,200 monthly for both and $1,125 monthly IO repayments. Some totals in that legacy sheet omit Building & Pest; this app recalculates consistently from the entered inputs.'},
- {id:'sample-210',name:'Historical $210K Purchase Analysis',purchasePrice:210000,weeklyRent:300,landSize:0,ownershipShare:50,depositPct:5,interestRate:7.5,loanType:'IO',loanTerm:30,lmi:0,stampDuty:7255,mortgageRegistration:140,transferFee:1341,conveyancing:500,buildingPest:0,councilRatesAnnual:1400,waterAnnual:0,insuranceMonthly:70,bodyCorpMonthly:0,managementPct:10,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Transcribed from the workbook $210K sheet. Workbook showed $150/week rent per owner / $1,200 monthly for both and $1,312.50 monthly IO repayments. Purchase costs were stamp duty, mortgage registration, transfer and conveyancing.'},
- {id:'sample-275',name:'Moorooka QLD – Historical $275K Scenario',purchasePrice:275000,weeklyRent:290,landSize:0,ownershipShare:50,depositPct:5,interestRate:5,loanType:'IO',loanTerm:30,lmi:7341,stampDuty:8050,mortgageRegistration:162.9,transferFee:470.9,conveyancing:1000,buildingPest:1000,councilRatesAnnual:1220.04,waterAnnual:800.04,insuranceMonthly:50,bodyCorpMonthly:116.67,managementPct:8,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Directly based on the workbook $275K Moorooka QLD sheet. It used a 5% deposit, $7,341 LMI, $290/week rent, 8% property management formula (despite the label saying 10%), council $305/qtr, water $200/qtr and body corporate $116.67/month. The workbook stored the IO repayment as $1,140.59/month.'},
- {id:'sample-280',name:'Moorooka QLD – Historical $280K Scenario',purchasePrice:280000,weeklyRent:290,landSize:0,ownershipShare:50,depositPct:5,interestRate:5,loanType:'IO',loanTerm:30,lmi:7341,stampDuty:11015,mortgageRegistration:107,transferFee:214,conveyancing:1000,buildingPest:1000,councilRatesAnnual:1220.04,waterAnnual:800.04,insuranceMonthly:50,bodyCorpMonthly:116.67,managementPct:8,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Directly based on the workbook $280K Moorooka QLD sheet. It used a 5% deposit, $7,341 LMI, $290/week rent, 8% property management formula, council $305/qtr, water $200/qtr and body corporate $116.67/month. The workbook stored the IO repayment as $1,441.85/month.'}
+ {id:'sample-180',state:'QLD',propertyType:'unit',name:'Historical $180K Purchase Analysis',purchasePrice:180000,weeklyRent:300,landSize:0,ownershipShare:50,depositPct:5,interestRate:7.5,loanType:'IO',loanTerm:30,lmi:0,stampDuty:6830,mortgageRegistration:140,transferFee:1134,conveyancing:500,buildingPest:500,councilRatesAnnual:1400,waterAnnual:0,insuranceMonthly:70,bodyCorpMonthly:0,managementPct:10,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Transcribed from the workbook $180K sheet. Workbook showed $150/week rent per owner / $1,200 monthly for both and $1,125 monthly IO repayments. Some totals in that legacy sheet omit Building & Pest; this app recalculates consistently from the entered inputs.'},
+ {id:'sample-210',state:'QLD',propertyType:'unit',name:'Historical $210K Purchase Analysis',purchasePrice:210000,weeklyRent:300,landSize:0,ownershipShare:50,depositPct:5,interestRate:7.5,loanType:'IO',loanTerm:30,lmi:0,stampDuty:7255,mortgageRegistration:140,transferFee:1341,conveyancing:500,buildingPest:0,councilRatesAnnual:1400,waterAnnual:0,insuranceMonthly:70,bodyCorpMonthly:0,managementPct:10,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Transcribed from the workbook $210K sheet. Workbook showed $150/week rent per owner / $1,200 monthly for both and $1,312.50 monthly IO repayments. Purchase costs were stamp duty, mortgage registration, transfer and conveyancing.'},
+ {id:'sample-275',state:'QLD',propertyType:'unit',name:'Moorooka QLD – Historical $275K Scenario',purchasePrice:275000,weeklyRent:290,landSize:0,ownershipShare:50,depositPct:5,interestRate:5,loanType:'IO',loanTerm:30,lmi:7341,stampDuty:8050,mortgageRegistration:162.9,transferFee:470.9,conveyancing:1000,buildingPest:1000,councilRatesAnnual:1220.04,waterAnnual:800.04,insuranceMonthly:50,bodyCorpMonthly:116.67,managementPct:8,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Directly based on the workbook $275K Moorooka QLD sheet. It used a 5% deposit, $7,341 LMI, $290/week rent, 8% property management formula (despite the label saying 10%), council $305/qtr, water $200/qtr and body corporate $116.67/month. The workbook stored the IO repayment as $1,140.59/month.'},
+ {id:'sample-280',state:'QLD',propertyType:'unit',name:'Moorooka QLD – Historical $280K Scenario',purchasePrice:280000,weeklyRent:290,landSize:0,ownershipShare:50,depositPct:5,interestRate:5,loanType:'IO',loanTerm:30,lmi:7341,stampDuty:11015,mortgageRegistration:107,transferFee:214,conveyancing:1000,buildingPest:1000,councilRatesAnnual:1220.04,waterAnnual:800.04,insuranceMonthly:50,bodyCorpMonthly:116.67,managementPct:8,vacancyPct:0,maintenanceAnnual:0,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:true,notes:'Directly based on the workbook $280K Moorooka QLD sheet. It used a 5% deposit, $7,341 LMI, $290/week rent, 8% property management formula, council $305/qtr, water $200/qtr and body corporate $116.67/month. The workbook stored the IO repayment as $1,441.85/month.'}
 ];
-const defaults={id:'',name:'',url:'',purchasePrice:285000,weeklyRent:400,landSize:0,ownershipShare:100,depositPct:20,interestRate:6.2,loanType:'PI',loanTerm:30,lmi:0,stampDuty:0,mortgageRegistration:0,transferFee:0,conveyancing:1800,buildingPest:650,councilRatesAnnual:0,waterAnnual:0,insuranceMonthly:0,bodyCorpMonthly:0,managementPct:7.7,vacancyPct:2,maintenanceAnnual:1500,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:false,notes:''};
+const defaults={id:'',name:'',state:'NSW',propertyType:'house',url:'',purchasePrice:285000,weeklyRent:400,landSize:0,ownershipShare:100,depositPct:20,interestRate:6.2,loanType:'PI',loanTerm:30,lmi:0,stampDuty:0,mortgageRegistration:0,transferFee:0,conveyancing:1800,buildingPest:650,councilRatesAnnual:0,waterAnnual:0,insuranceMonthly:0,bodyCorpMonthly:0,managementPct:7.7,vacancyPct:2,maintenanceAnnual:1500,otherMonthly:0,valueAdd:0,floodRisk:0,development:0,historicalSample:false,notes:''};
 let properties=load(); let selectedCompare=new Set(properties.slice(0,3).map(p=>p.id));
 
 function load(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(x)&&x.length?x:structuredClone(sampleProperties)}catch{return structuredClone(sampleProperties)}}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(properties));}
 function n(v){return Number(v)||0}
+
+function calcTransferDuty(state, price){
+ price=Math.max(0,Number(price)||0);
+ if(state==='NSW'){
+  if(price<=18000)return Math.max(20,price*0.0125);
+  if(price<=38000)return 225+(price-18000)*0.015;
+  if(price<=103000)return 525+(price-38000)*0.0175;
+  if(price<=387000)return 1662+(price-103000)*0.035;
+  if(price<=1290000)return 11602+(price-387000)*0.045;
+  return 52237+(price-1290000)*0.055;
+ }
+ if(state==='QLD'){
+  if(price<=5000)return 0;
+  if(price<=75000)return Math.ceil((price-5000)/100)*1.5;
+  if(price<=540000)return 1050+Math.ceil((price-75000)/100)*3.5;
+  if(price<=1000000)return 17325+Math.ceil((price-540000)/100)*4.5;
+  return 38025+Math.ceil((price-1000000)/100)*5.75;
+ }
+ return null;
+}
+
 function calc(p){
  const price=n(p.purchasePrice), deposit=price*n(p.depositPct)/100, baseLoan=Math.max(0,price-deposit), totalLoan=baseLoan+n(p.lmi);
  const r=n(p.interestRate)/100/12, months=Math.max(1,n(p.loanTerm)*12);
@@ -53,6 +74,7 @@ function renderCompareTable(){const ps=properties.filter(p=>selectedCompare.has(
 
 document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>switchView(t.dataset.view));
 document.getElementById('newPropertyBtn').onclick=()=>{fillForm({...defaults,id:''});switchView('analyse')};
+document.getElementById('calcDutyBtn').onclick=()=>{const state=document.getElementById('state').value,price=n(document.getElementById('purchasePrice').value),duty=calcTransferDuty(state,price);if(duty===null){alert('Automatic duty is currently implemented for standard NSW and QLD investment purchases only. Enter the official calculator result manually for this state.');return;}document.getElementById('stampDuty').value=duty.toFixed(2);renderLive();};
 document.getElementById('duplicateBtn').onclick=()=>{const p=readForm();p.id='';p.name=`${p.name||'Property'} copy`;fillForm(p)};
 document.getElementById('propertyForm').addEventListener('input',renderLive);
 document.getElementById('propertyForm').onsubmit=e=>{e.preventDefault();const p=readForm(),i=properties.findIndex(x=>x.id===p.id);if(i>=0)properties[i]=p;else properties.unshift(p);save();renderDashboard();selectedCompare.add(p.id);switchView('dashboard')};

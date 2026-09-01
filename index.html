@@ -53,14 +53,15 @@
         <div class="form-grid">
           <fieldset>
             <legend>Property</legend>
-            <label>Name<input id="name" required placeholder="e.g. 1 Clarke Street, Forbes"></label>
-            <label>Listing / source URL<input id="url" type="url" placeholder="https://..."></label>
+            <label>Name <span class="source-tag user">USER</span><input id="name" required placeholder="e.g. 1 Clarke Street, Forbes"></label>
+            <div class="two-col"><label>State <span class="source-tag user">USER</span><select id="state"><option value="NSW">NSW</option><option value="QLD">QLD</option><option value="VIC">VIC</option><option value="ACT">ACT</option><option value="SA">SA</option><option value="WA">WA</option><option value="TAS">TAS</option><option value="NT">NT</option></select></label><label>Property type <span class="source-tag user">USER</span><select id="propertyType"><option value="house">House</option><option value="unit">Unit / apartment</option><option value="townhouse">Townhouse</option><option value="land">Land</option><option value="other">Other</option></select></label></div>
+            <label>Listing / source URL <span class="source-tag property">PROPERTY</span><input id="url" type="url" placeholder="https://..."></label>
             <div class="two-col">
-              <label>Purchase price ($)<input id="purchasePrice" type="number" min="0" step="1000"></label>
-              <label>Weekly rent ($)<input id="weeklyRent" type="number" min="0" step="5"></label>
+              <label>Purchase price ($) <span class="source-tag property">PROPERTY</span><input id="purchasePrice" type="number" min="0" step="1000"></label>
+              <label>Weekly rent ($) <span class="source-tag external">CURRENT</span><input id="weeklyRent" type="number" min="0" step="5"></label>
             </div>
             <div class="two-col">
-              <label>Land size (m²)<input id="landSize" type="number" min="0"></label>
+              <label>Land size (m²) <span class="source-tag property">PROPERTY</span><input id="landSize" type="number" min="0"></label>
               <label>Ownership share (%)<input id="ownershipShare" type="number" min="1" max="100" step="1"></label>
             </div>
             <label>Notes<textarea id="notes" rows="4" placeholder="What makes the deal interesting? Risks? Questions?"></textarea></label>
@@ -69,39 +70,39 @@
           <fieldset>
             <legend>Purchase & finance</legend>
             <div class="two-col">
-              <label>Deposit (%)<input id="depositPct" type="number" min="0" max="100" step="0.1"></label>
-              <label>Interest rate (%)<input id="interestRate" type="number" min="0" step="0.01"></label>
+              <label>Deposit (%) <span class="source-tag user">USER</span><input id="depositPct" type="number" min="0" max="100" step="0.1"></label>
+              <label>Interest rate (%) <span class="source-tag external">CURRENT</span><input id="interestRate" type="number" min="0" step="0.01"></label>
             </div>
             <div class="two-col">
               <label>Loan type<select id="loanType"><option value="IO">Interest only</option><option value="PI">Principal & interest</option></select></label>
               <label>Loan term (years)<input id="loanTerm" type="number" min="1" max="50"></label>
             </div>
             <div class="two-col">
-              <label>LMI ($)<input id="lmi" type="number" min="0"></label>
-              <label>Stamp duty ($)<input id="stampDuty" type="number" min="0"></label>
+              <label>LMI ($) <span class="source-tag external">QUOTE</span><input id="lmi" type="number" min="0"></label>
+              <label>Stamp duty ($) <span class="source-tag calc">AUTO*</span><input id="stampDuty" type="number" min="0"><button type="button" class="mini-action" id="calcDutyBtn">Calculate NSW/QLD duty</button></label>
             </div>
             <div class="two-col">
-              <label>Mortgage registration ($)<input id="mortgageRegistration" type="number" min="0"></label>
-              <label>Transfer fee ($)<input id="transferFee" type="number" min="0"></label>
+              <label>Mortgage registration ($) <span class="source-tag external">CURRENT</span><input id="mortgageRegistration" type="number" min="0"></label>
+              <label>Transfer fee ($) <span class="source-tag external">CURRENT</span><input id="transferFee" type="number" min="0"></label>
             </div>
             <div class="two-col">
-              <label>Conveyancing ($)<input id="conveyancing" type="number" min="0"></label>
-              <label>Building & pest ($)<input id="buildingPest" type="number" min="0"></label>
+              <label>Conveyancing ($) <span class="source-tag external">QUOTE</span><input id="conveyancing" type="number" min="0"></label>
+              <label>Building & pest ($) <span class="source-tag external">QUOTE</span><input id="buildingPest" type="number" min="0"></label>
             </div>
           </fieldset>
 
           <fieldset>
             <legend>Annual / monthly holding costs</legend>
             <div class="two-col">
-              <label>Council rates / year ($)<input id="councilRatesAnnual" type="number" min="0"></label>
-              <label>Water / year ($)<input id="waterAnnual" type="number" min="0"></label>
+              <label>Council rates / year ($) <span class="source-tag property">PROPERTY</span><input id="councilRatesAnnual" type="number" min="0"></label>
+              <label>Water / year ($) <span class="source-tag property">PROPERTY</span><input id="waterAnnual" type="number" min="0"></label>
             </div>
             <div class="two-col">
-              <label>Landlord insurance / month ($)<input id="insuranceMonthly" type="number" min="0"></label>
-              <label>Body corporate / month ($)<input id="bodyCorpMonthly" type="number" min="0"></label>
+              <label>Landlord insurance / month ($) <span class="source-tag external">QUOTE</span><input id="insuranceMonthly" type="number" min="0"></label>
+              <label>Body corporate / month ($) <span class="source-tag property">PROPERTY</span><input id="bodyCorpMonthly" type="number" min="0"></label>
             </div>
             <div class="two-col">
-              <label>Management fee (%)<input id="managementPct" type="number" min="0" max="30" step="0.1"></label>
+              <label>Management fee (%) <span class="source-tag external">QUOTE</span><input id="managementPct" type="number" min="0" max="30" step="0.1"></label>
               <label>Vacancy allowance (%)<input id="vacancyPct" type="number" min="0" max="30" step="0.1"></label>
             </div>
             <div class="two-col">
@@ -120,6 +121,19 @@
           </fieldset>
         </div>
 
+
+        <div class="panel source-guide">
+          <div class="section-head"><div><p class="eyebrow">WORKBOOK DATA LOGIC</p><h2>Where each number comes from</h2></div></div>
+          <div class="source-legend"><span class="source-tag calc">CALCULATED</span> app formula <span class="source-tag property">PROPERTY</span> listing/agent/council <span class="source-tag external">CURRENT / QUOTE</span> lender/provider/government <span class="source-tag user">USER</span> your financing choice</div>
+          <div class="data-spec">
+            <div><strong>Calculated by app</strong><span>Deposit $, base loan, total loan, monthly repayments, monthly rent, management $, gross yield, net cash flow, cash required and comparison metrics.</span></div>
+            <div><strong>Government/current</strong><span>Stamp duty and registration/transfer fees. Duty can be auto-estimated for standard NSW or QLD investment purchases; verify unusual transactions with the relevant revenue office.</span></div>
+            <div><strong>Finance quote</strong><span>Interest rate and LMI. These depend on lender, LVR, loan structure and borrower profile, so the workbook correctly treated them as current external data.</span></div>
+            <div><strong>Property-specific</strong><span>Price, land size, council rates, water, strata/body corporate and achievable rent. Prefer contract/agent/council/property-manager figures over generic suburb estimates.</span></div>
+            <div><strong>Service quotes</strong><span>Conveyancing, building/pest, landlord insurance and property-management percentage.</span></div>
+          </div>
+          <p class="hint">* NSW auto-duty uses the 2026/27 general transfer-duty brackets. QLD uses current general transfer-duty rates for an investment property. Historical spreadsheet samples remain unchanged until you press Calculate.</p>
+        </div>
         <div class="results-panel">
           <div class="section-head"><h2>Live results</h2><span id="scoreBadge" class="score-badge">—</span></div>
           <div id="liveResults" class="kpi-grid"></div>

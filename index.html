@@ -55,6 +55,7 @@
             <legend>Property</legend>
             <label>Name <span class="source-tag user">USER</span><input id="name" required placeholder="e.g. 1 Clarke Street, Forbes"></label>
             <div class="two-col"><label>State <span class="source-tag user">USER</span><select id="state"><option value="NSW">NSW</option><option value="QLD">QLD</option><option value="VIC">VIC</option><option value="ACT">ACT</option><option value="SA">SA</option><option value="WA">WA</option><option value="TAS">TAS</option><option value="NT">NT</option></select></label><label>Property type <span class="source-tag user">USER</span><select id="propertyType"><option value="house">House</option><option value="unit">Unit / apartment</option><option value="townhouse">Townhouse</option><option value="land">Land</option><option value="other">Other</option></select></label></div>
+            <label>Street address <span class="source-tag property">PROPERTY</span><input id="address" placeholder="e.g. 1 Clarke Street, Forbes NSW 2871"></label>
             <label>Listing / source URL <span class="source-tag property">PROPERTY</span><input id="url" type="url" placeholder="https://..."></label>
             <div class="two-col">
               <label>Purchase price ($) <span class="source-tag property">PROPERTY</span><input id="purchasePrice" type="number" min="0" step="1000"></label>
@@ -109,6 +110,22 @@
               <label>Maintenance allowance / year ($)<input id="maintenanceAnnual" type="number" min="0"></label>
               <label>Other costs / month ($)<input id="otherMonthly" type="number" min="0"></label>
             </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>NSW planning API</legend>
+            <p class="hint">For NSW properties, use the address above to run a government spatial-data screening check. Results are saved with the property.</p>
+            <button type="button" id="planningLookupBtn" class="primary">Check NSW planning overlays</button>
+            <div id="planningStatus" class="planning-status">Not checked.</div>
+            <div class="planning-grid">
+              <div class="planning-item"><span>Zoning</span><strong id="planningZoning">—</strong></div>
+              <div class="planning-item"><span>Minimum lot size</span><strong id="planningLotSize">—</strong></div>
+              <div class="planning-item"><span>Flood overlay</span><strong id="planningFlood">—</strong></div>
+              <div class="planning-item"><span>Heritage overlay</span><strong id="planningHeritage">—</strong></div>
+              <div class="planning-item"><span>Bushfire prone</span><strong id="planningBushfire">—</strong></div>
+            </div>
+            <input id="zoning" type="hidden"><input id="minimumLotSize" type="hidden"><input id="floodOverlay" type="hidden"><input id="heritageOverlay" type="hidden"><input id="bushfireOverlay" type="hidden"><input id="planningCheckedAt" type="hidden"><input id="planningApiStatus" type="hidden">
+            <p class="hint">Flood is a screening result only. NSW Planning notes council flood mapping may be newer than the statewide EPI dataset, so verify a serious purchase with council / a Section 10.7 certificate.</p>
           </fieldset>
 
           <fieldset>

@@ -33,3 +33,9 @@ For GitHub Pages, place these files at the repo root (or `/docs`) and enable Pag
 The supplied workbook did not intend every number to be hard-coded. This revision labels inputs by source: USER, PROPERTY, CURRENT/QUOTE, or calculated by the app. It also includes an optional transfer-duty estimator for standard NSW and QLD investment purchases. Always verify duty and unusual transaction treatment with the relevant state revenue office or conveyancer.
 
 The Moorooka workbook samples are preserved as historical scenarios, including their original stamp duty, fees, LMI and interest assumptions.
+
+
+## v1.2 NSW planning API experiment
+For NSW properties, enter a street address and press **Check NSW planning overlays**. The app attempts to resolve the address using NSW Spatial Services and query NSW Government ArcGIS REST layers for land zoning, minimum lot size, heritage, flood planning and bushfire-prone land. Results are stored with the property.
+
+Flood results are screening only. NSW Planning advises that councils have been responsible for current local flood mapping since 14 July 2021, so a serious purchase should still be verified with the relevant council / Section 10.7 planning certificate. If a browser or government endpoint blocks a request, the app leaves the result unverified rather than treating it as 'not found'.
